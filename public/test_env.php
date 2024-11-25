@@ -1,6 +1,6 @@
 <?php
-require_once '../config/env.php'; // Asegúrate de que esta ruta sea correcta
-loadEnv(__DIR__ . '/../.env'); // Ajusta la ruta al archivo .env
+require_once '../config/env.php';
+loadEnv(__DIR__ . '/../.env');
 
 echo 'DB_HOST: ' . $_ENV['DB_HOST'] . '<br>';
 echo 'DB_NAME: ' . $_ENV['DB_NAME'] . '<br>';
