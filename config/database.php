@@ -1,9 +1,8 @@
 <?php
 namespace App\Config;
 
-// Cargar variables de entorno
 require_once __DIR__ . '/env.php';
-loadEnv(__DIR__ . '/../.env'); // Ajusta la ruta si es necesario
+loadEnv(__DIR__ . '/../.env');
 
 class Database {
     private $host;
