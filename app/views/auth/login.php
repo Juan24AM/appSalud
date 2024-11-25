@@ -12,7 +12,7 @@
             background-size: cover;
             background-position: center;
             height: 100vh;
-            display: flex; 
+            display: flex;
             align-items: center;
             justify-content: center;
             color: white;
@@ -35,23 +35,23 @@
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2 class="text-center mb-4">Iniciar sesión</h2>
-        <form action="../login" method="POST">
-            <input type="text" name="input" placeholder="Correo o DNI" 
-                   class="form-control my-3 <?php echo !empty($error_message) ? 'error-input' : ''; ?>" 
-                   value="<?php echo htmlspecialchars($input); ?>" required>
-            <input type="password" name="password" placeholder="Contraseña" 
-                   class="form-control my-3 <?php echo !empty($error_message) ? 'error-input' : ''; ?>" required>
-            
-            <?php if (!empty($error_message)): ?>
-                <div class="error text-center mt-2"><?php echo $error_message; ?></div>
-            <?php endif; ?>
+<div class="form-container">
+    <h2 class="text-center mb-4">Iniciar sesión</h2>
+    <form action="../login" method="POST">
+        <input type="text" name="input" placeholder="Correo o DNI"
+               class="form-control my-3 <?php echo !empty($error_message) ? 'error-input' : ''; ?>"
+               value="<?php echo htmlspecialchars($input); ?>" required>
+        <input type="password" name="password" placeholder="Contraseña"
+               class="form-control my-3 <?php echo !empty($error_message) ? 'error-input' : ''; ?>" required>
 
-            <button class="btn btn-primary w-100">Iniciar sesión</button>
-        </form>
-    </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <?php if (!empty($error_message)): ?>
+            <div class="error text-center mt-2"><?php echo $error_message; ?></div>
+        <?php endif; ?>
+
+        <button class="btn btn-primary w-100">Iniciar sesión</button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
