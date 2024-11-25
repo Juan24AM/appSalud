@@ -1,11 +1,9 @@
 <?php
-session_start(); // Inicia la sesión
+session_start();
 
-// Destruye la sesión y elimina las variables de sesión
 session_unset();
 session_destroy();
 
-// Muestra un mensaje de agradecimiento
 echo '<!DOCTYPE html>
 <html lang="es">
 <head>
