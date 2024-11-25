@@ -35,7 +35,7 @@ class User
             return true;
         } catch (PDOException $e) {
             if ($e->getCode() == 23000) {
-                return false; // Duplicate entry
+                return false;
             }
             error_log("Error en el registro: " . $e->getMessage());
             return false;
