@@ -1,13 +1,14 @@
 <?php
-require_once __DIR__ . '/../models/User.php';
+namespace App\Controllers;
+use App\Models\User;
 
 class LoginController {
     public function login() {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
-        }        
+        }
         if (isset($_SESSION['nombre'])) {
-            header("Location: /dashboard.php");
+            header("Location: /appSalud/public/dashboard.php");
             exit();
         }
 
@@ -15,21 +16,34 @@ class LoginController {
         $input = "";
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $user = new User();
+            $user = new \App\Models\User();
             $input = $_POST['input'];
-            $result = $user->login($input, $_POST['password']);
-            
-            if ($result) {
-                $_SESSION['nombre'] = $result['nombres'];
-                $_SESSION['dni'] = $result['dni'];
+            $password = $_POST['password'];
 
-                header("Location: /dashboard.php");
-                exit();
+            if (empty($input) || empty($password)) {
+                $error_message = "Por favor, completa todos los campos.";
             } else {
-                $error_message = "Credenciales inválidas";
+                $result = $user->login($input, $password);
+
+                if ($result) {
+                    $_SESSION['nombre'] = $result['nombres'];
+                    $_SESSION['dni'] = $result['dni'];
+
+                    header("Location: /appSalud/public/dashboard.php");
+                    exit();
+                } else {
+                    $error_message = "Credenciales inválidas";
+                }
             }
         }
 
         include __DIR__ . '/../views/auth/login.php';
+    }
+    public function logout() {
+        session_unset();
+        session_destroy();
+
+        header("Location: " . BASE_URL . "/login");
+        exit();
     }
 }
