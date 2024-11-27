@@ -28,6 +28,7 @@ class LoginController {
                 if ($result) {
                     $_SESSION['nombre'] = $result['nombres'];
                     $_SESSION['dni'] = $result['dni'];
+                    $_SESSION['user_id'] = $result['id'];
 
                     header("Location: /appSalud/public/dashboard.php");
                     exit();

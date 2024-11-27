@@ -20,17 +20,11 @@ if (session_status() == PHP_SESSION_NONE) {
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-                <a class="nav-link" href="/dashboard.php">Inicio</a>
+                <a class="nav-link" href="/appSalud">Inicio</a>
             </li>
-            <!-- <li class="nav-item">
-                <a class="nav-link" href="/public/perfil.php">Perfil</a>
-            </li> -->
-            <!-- <li class="nav-item">
-                <a class="nav-link" href="/public/configuracion.php">Configuración</a>
-            </li> -->
             <?php if (isset($_SESSION['nombre']) && isset($_SESSION['dni'])): ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="/profile">Perfil</a>
+                    <a class="nav-link" href="/appSalud/profile">Perfil</a> <!-- Cambiado aquí -->
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/appSalud/public/logout.php">Cerrar sesión</a>

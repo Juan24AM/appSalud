@@ -8,9 +8,13 @@ class ProfileController {
     private $userModel;
 
     public function __construct() {
-        $this->userModel = new \App\Models\User();
-    }
+        $this ->userModel = new \App\Models\User();
+        if (!isset($_SESSION['nombre']) || !isset($_SESSION['dni'])) {
+            header("Location: " . BASE_URL . "/login");
+            exit;
 
+        }
+    }
     public function showProfile() {
         if (!isset($_SESSION['dni'])) {
             echo "<p>No has iniciado sesión.</p>";
@@ -22,7 +26,7 @@ class ProfileController {
         $successMessage = isset($_SESSION['successMessage']) ? $_SESSION['successMessage'] : null;
         unset($_SESSION['successMessage']);
 
-        require __DIR__ . '/../views/templates/profile.php';
+        require __DIR__ . '/../views/profile.php';
     }
 
     public function updateProfile() {
