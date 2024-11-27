@@ -37,12 +37,18 @@
 <body>
 <div class="form-container">
     <h2 class="text-center mb-4">Iniciar sesión</h2>
-    <form action="../login" method="POST">
-        <input type="text" name="input" placeholder="Correo o DNI"
-               class="form-control my-3 <?php echo !empty($error_message) ? 'error-input' : ''; ?>"
-               value="<?php echo htmlspecialchars($input); ?>" required>
-        <input type="password" name="password" placeholder="Contraseña"
-               class="form-control my-3 <?php echo !empty($error_message) ? 'error-input' : ''; ?>" required>
+    <form action="/appSalud/login" method="POST"> <!-- Cambiado a la ruta correcta -->
+        <div class="mb-3">
+            <label for="input" class="form-label">Correo o DNI</label>
+            <input type="text" id="input" name="input" placeholder="Correo o DNI"
+                   class="form-control <?php echo !empty($error_message) ? 'error-input' : ''; ?>"
+                   value="<?php echo htmlspecialchars($input); ?>" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" id="password" name="password" placeholder="Contraseña"
+                   class="form-control <?php echo !empty($error_message) ? 'error-input' : ''; ?>" required>
+        </div>
 
         <?php if (!empty($error_message)): ?>
             <div class="error text-center mt-2"><?php echo $error_message; ?></div>
