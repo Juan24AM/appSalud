@@ -33,7 +33,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     <a class="nav-link" href="/profile">Perfil</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/logout.php">Cerrar sesión</a>
+                    <a class="nav-link" href="/appSalud/public/logout.php">Cerrar sesión</a>
                 </li>
             <?php endif; ?>
         </ul>
