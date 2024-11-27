@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-require_once __DIR__ . '/../../config/database.php';
+require_once(__DIR__ . '/../../config/database.php');
+use PDO;
 
 class User
 {
     private $conn;
     private $table_name = "usuario";
 
-    public function __construct()
-    {
-        $database = new Database();
+    public function __construct() {
+        $database = new \App\Config\Database();
         $this->conn = $database->getConnection();
     }
 
@@ -45,22 +45,42 @@ class User
     public function login($input, $password)
     {
         $is_email = filter_var($input, FILTER_VALIDATE_EMAIL);
-        if ($is_email) {
-            $query = "SELECT * FROM " . $this->table_name . " WHERE email = :input";
-        } else {
-            $query = "SELECT * FROM " . $this->table_name . " WHERE dni = :input";
-        }
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':input', $input);
-        $stmt->execute();
+        $query = $is_email
+            ? "SELECT * FROM " . $this->table_name . " WHERE email = :input"
+            : "SELECT * FROM " . $this->table_name . " WHERE dni = :input";
 
-        if ($stmt->rowCount() > 0) {
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (password_verify($password, $user['contraseña'])) {
-                return $user;
+        try {
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':input', $input);
+            $stmt->execute();
+
+            if ($stmt->rowCount() > 0) {
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if (password_verify($password, $user['contraseña'])) {
+                    $this->updateLastLogin($user['dni']);
+                    return $user;
+                } else {
+                    return false;
+                }
             }
+            return false;
+        } catch (PDOException $e) {
+            error_log("Error en el inicio de sesión: " . $e->getMessage());
+            return false;
         }
-        return false;
+    }
+
+    private function updateLastLogin($dni)
+    {
+        $query = "UPDATE " . $this->table_name . " SET ultimo_inicio_sesion = NOW() WHERE dni = :dni";
+        try {
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':dni', $dni);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error al actualizar último inicio de sesión: " . $e->getMessage());
+        }
     }
 
     public function getUserByDni($dni)
@@ -70,10 +90,7 @@ class User
         $stmt->bindParam(':dni', $dni);
         $stmt->execute();
 
-        if ($stmt->rowCount() > 0) {
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        }
-        return false;
+        return $stmt->rowCount() > 0 ? $stmt->fetch(PDO::FETCH_ASSOC) : false;
     }
 
     public function existsByDni($dni)
