@@ -1,4 +1,6 @@
 <?php
+namespace App\Controllers;
+
 session_start();
 require_once __DIR__ . '/../models/User.php';
 
@@ -6,13 +8,13 @@ class ProfileController {
     private $userModel;
 
     public function __construct() {
-        $this->userModel = new User();
+        $this->userModel = new \App\Models\User();
     }
 
     public function showProfile() {
         if (!isset($_SESSION['dni'])) {
             echo "<p>No has iniciado sesión.</p>";
-            echo '<a href="/login" class="btn btn-primary">Iniciar sesión</a>';
+            echo '<a href="/appSalud/login" class="btn btn-primary">Iniciar sesión</a>';
             exit;
         }
         $dni = $_SESSION['dni'];
@@ -22,7 +24,7 @@ class ProfileController {
 
         require __DIR__ . '/../views/templates/profile.php';
     }
-    
+
     public function updateProfile() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $dni = $_POST['dni'];
@@ -37,10 +39,18 @@ class ProfileController {
             $sexo = $_POST['sexo'];
             $fecha_nacimiento = $_POST['fecha_nacimiento'];
 
-            $this->userModel->updateUser($dni, $nombres, $apellidos, $email, $telefono, $departamento, $provincia, $ciudad, $direccion, $sexo, $fecha_nacimiento);
-            
-            $_SESSION['successMessage'] = 'Los datos se actualizaron satisfactoriamente.';
-            header("Location: /profile");
+            if (empty($nombres) || empty($apellidos) || empty($email) || empty($telefono)) {
+                $_SESSION['errorMessage'] = 'Todos los campos son obligatorios.';
+                header("Location: /appSalud/profile");
+                exit();
+            }
+
+            if ($this->userModel->updateUser ($dni, $nombres, $apellidos, $email, $telefono, $departamento, $provincia, $ciudad, $direccion, $sexo, $fecha_nacimiento)) {
+                $_SESSION['successMessage'] = 'Los datos se actualizaron satisfactoriamente.';
+            } else {
+                $_SESSION['errorMessage'] = 'Error al actualizar los datos. Por favor, inténtelo de nuevo.';
+            }
+            header("Location: /appSalud/profile");
             exit();
         }
     }
