@@ -71,72 +71,76 @@
     </style>
 </head>
 <body>
-    <?php
-        include_once __DIR__ . '/../app/views/templates/header.php';
-        if (!isset($_SESSION['nombre']) || !isset($_SESSION['dni'])) {
-            echo '<div class="container text-center" style="margin-top: 100px;">';
-            echo '<h2 class="text-danger">No has iniciado sesión.</h2>';
-            echo '<p>Por favor, inicia sesión para continuar.</p>';
-            echo '<a href="/login" class="btn btn-primary btn-lg" style="padding: 15px 30px;">Iniciar sesión</a>';
-            echo '</div>';
-            exit;
-        }
-    ?>
-    
-    <div class="container">
-        <div id="user-info">
-            <h2>Bienvenido/a</h2>
-            <p><strong>Nombre:</strong> <?php echo htmlspecialchars($_SESSION['nombre']); ?></p>
-            <p><strong>DNI:</strong> <?php echo htmlspecialchars($_SESSION['dni']); ?></p>
-        </div>
+<?php
+include_once __DIR__ . '/../app/views/templates/header.php';
+if (!isset($_SESSION['nombre']) || !isset($_SESSION['dni'])) {
+    echo '<div class="container text-center" style="margin-top: 100px;">';
+    echo '<h2 class="text-danger">No has iniciado sesión.</h2>';
+    echo '<p>Por favor, inicia sesión para continuar.</p>';
+    echo '<a href="/appSalud/login" class="btn btn-primary btn-lg" style="padding: 15px 30px;">Iniciar sesión</a>';
+    echo '</div>';
+    exit;
+}
+?>
 
-        <div id="device-info">
-            <h2>Información del Dispositivo</h2>
-            <p><strong>Nombre:</strong> <span id="device-name">Cargando...</span></p>
-            <p><strong>Descripción:</strong> <span id="device-description">Cargando...</span></p>
-            <p><strong>Última Actualización:</strong> <span id="update-time">Cargando...</span></p>
-            <div class="btn-container">
-                <a href="#" id="share-btn" class="btn">Compartir Ubicación</a>
-                <a href="#" id="directions-btn" class="btn">Obtener Indicaciones</a>
-            </div>
-        </div>
-
-        <div id="map"></div>
+<div class="container">
+    <div id="user-info">
+        <h2>Bienvenido/a</h2>
+        <p><strong>Nombre:</strong> <?php echo htmlspecialchars($_SESSION['nombre']); ?></p>
+        <p><strong>DNI:</strong> <?php echo htmlspecialchars($_SESSION['dni']); ?></p>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script>
-        let map = L.map('map').setView([0, 0], 15);
-        let marker = L.marker([0, 0]).addTo(map);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+    <div id="device-info">
+        <h2>Información del Dispositivo</h2>
+        <p><strong>Nombre:</strong> <span id="device-name">Cargando...</span></p>
+        <p><strong>Descripción:</strong> <span id="device-description">Cargando...</span></p>
+        <p><strong>Última Actualización:</strong> <span id="update-time">Cargando...</span></p>
+        <div class="btn-container">
+            <a href="#" id="share-btn" class="btn">Compartir Ubicación</a>
+            <a href="#" id="directions-btn" class="btn">Obtener Indicaciones</a>
+        </div>
+    </div>
 
-        async function fetchDeviceData() {
-            try {
-                const response = await fetch('http://161.132.50.15:5000/api/susalud/geoData');
-                const data = await response.json();
+    <div id="map"></div>
+</div>
 
-                document.getElementById('device-name').textContent = data.nombre;
-                document.getElementById('device-description').textContent = data.descripcion;
-                document.getElementById('update-time').textContent = new Date().toLocaleString();
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+    let map = L.map('map').setView([0, 0], 15);
+    let marker = L.marker([0, 0]).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-                const latitud = data.latitud;
-                const longitud = data.longitud;
-                marker.setLatLng([latitud, longitud]);
-                map.setView([latitud, longitud]);
-
-                document.getElementById('share-btn').href = `https://wa.me/?text=Ubicación actual: https://www.google.com/maps?q=${latitud},${longitud}`;
-                document.getElementById('directions-btn').href = `https://www.google.com/maps/dir/?api=1&destination=${latitud},${longitud}`;
-
-            } catch (error) {
-                console.error("Error al obtener los datos del dispositivo:", error);
+    async function fetchDeviceData() {
+        try {
+            const response = await fetch('http://161.132.50.15:5000/api/susalud/geoData');
+            if (!response.ok) {
+                throw new Error('Error en la respuesta de la API');
             }
-        }
+            const data = await response.json();
 
-        setInterval(fetchDeviceData, 10000);
-        fetchDeviceData();
-    </script>
+            document.getElementById('device-name').textContent = data.nombre;
+            document.getElementById('device-description').textContent = data.descripcion;
+            document.getElementById('update-time').textContent = new Date().toLocaleString();
+
+            const latitud = data.latitud;
+            const longitud = data.longitud;
+            marker.setLatLng([latitud, longitud]);
+            map.setView([latitud, longitud]);
+
+            document.getElementById('share-btn').href = `https://wa.me/?text=Ubicación actual: https://www.google.com/maps?q=${latitud},${longitud}`;
+            document.getElementById('directions-btn').href = `https://www.google.com/maps/dir/?api=1&destination=${latitud},${longitud}`;
+
+        } catch (error) {
+            console.error("Error al obtener los datos del dispositivo:", error);
+            alert("No se pudo obtener la información del dispositivo. Inténtalo de nuevo más tarde.");
+        }
+    }
+
+    setInterval(fetchDeviceData, 10000);
+    fetchDeviceData();
+</script>
 </body>
 </html>
