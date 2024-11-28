@@ -3,7 +3,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-image: url('../images/4.png');
+    background-image: url('../images/Fondo_Dashboard.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -104,7 +104,7 @@ h2 {
 }
 
 .dashboard-body {
-    background-image: url('../images/4.png');
+    background-image: url('../images/Fondo_Dashboard.png');
 }
 
 /* Formulario */
