@@ -7,7 +7,7 @@ class RegisterController {
             session_start();
         }
         if (isset($_SESSION['nombre'])) {
-            header("Location: /appSalud/public/dashboard.php");
+            header("Location: " . BASE_URL . "/dashboard");
             exit();
         }
 
@@ -33,7 +33,7 @@ class RegisterController {
                 $error_message = 'Todos los campos son obligatorios.';
             } elseif ($user->existsByDni($dni)) {
                 $dni_error = 'Este DNI ya está registrado. Por favor, contacta con soporte.';
-            } elseif ($user->existsByEmail ($email)) {
+            } elseif ($user->existsByEmail($email)) {
                 $email_error = 'Este correo electrónico ya está registrado. Por favor, contacta con soporte.';
             } elseif ($password !== $confirm_password) {
                 $error_message = 'Las contraseñas no coinciden.';
@@ -42,11 +42,12 @@ class RegisterController {
                     $error_message = 'Error en el registro. Por favor, inténtelo de nuevo más tarde.';
                 } else {
                     $_SESSION['successMessage'] = 'Registro exitoso. Puedes iniciar sesión ahora.';
-                    header("Location: /appSalud/login");
+                    header("Location: " . BASE_URL . "/login");
                     exit;
                 }
             }
         }
+
         include __DIR__ . '/../views/auth/register.php';
     }
 }
