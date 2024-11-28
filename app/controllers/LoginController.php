@@ -8,7 +8,7 @@ class LoginController {
             session_start();
         }
         if (isset($_SESSION['nombre'])) {
-            header("Location: /appSalud/public/dashboard.php");
+            header("Location: " . BASE_URL . "/dashboard");
             exit();
         }
 
@@ -30,7 +30,7 @@ class LoginController {
                     $_SESSION['dni'] = $result['dni'];
                     $_SESSION['user_id'] = $result['id'];
 
-                    header("Location: /appSalud/public/dashboard.php");
+                    header("Location: " . BASE_URL . "/dashboard");
                     exit();
                 } else {
                     $error_message = "Credenciales inválidas";
@@ -40,7 +40,12 @@ class LoginController {
 
         include __DIR__ . '/../views/auth/login.php';
     }
+
     public function logout() {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
         session_unset();
         session_destroy();
 
