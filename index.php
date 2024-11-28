@@ -66,6 +66,11 @@ switch ($request) {
         }
         break;
 
+    case BASE_URL . '/dashboard':
+        $controller = new \App\Controllers\DashboardController($dbConnection);
+        $controller->showDashboard();
+        break;
+
     case BASE_URL . '/':
         header("Location: " . BASE_URL . "/login");
         exit();
