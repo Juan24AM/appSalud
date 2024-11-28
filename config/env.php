@@ -5,8 +5,13 @@ function loadEnv($filePath) {
     }
 
     $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
     foreach ($lines as $line) {
         if (strpos(trim($line), '#') === 0) {
+            continue;
+        }
+
+        if (strpos($line, '=') === false) {
             continue;
         }
 
@@ -16,4 +21,8 @@ function loadEnv($filePath) {
 
         $_ENV[$key] = $value;
     }
+}
+
+if (!defined('BASE_URL')) {
+    define('BASE_URL', '/appSalud');
 }
