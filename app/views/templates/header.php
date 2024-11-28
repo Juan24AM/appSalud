@@ -8,6 +8,12 @@ if (session_status() == PHP_SESSION_NONE) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" href="<?= BASE_URL ?>/public/images/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="<?= BASE_URL ?>/public/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" sizes="192x192" href="<?= BASE_URL ?>/public/images/favicon-192x192.png">
+    <link rel="icon" sizes="512x512" href="<?= BASE_URL ?>/public/images/favicon-512x512.png">
+
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -27,7 +33,8 @@ if (session_status() == PHP_SESSION_NONE) {
                     <a class="nav-link" href="/appSalud/profile">Perfil</a> <!-- Cambiado aquí -->
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/appSalud/public/logout.php">Cerrar sesión</a>
+                    <a class="nav-link" href="<?php echo BASE_URL; ?>/logout">Cerrar sesión</a>
+
                 </li>
             <?php endif; ?>
         </ul>
