@@ -4,75 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Localización de Dispositivo</title>
+    <!-- CSS Moderno y Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-image: url('../images/4.png');
+            background-image: url('/appSalud/public/images/Fondo_Dashboard.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            background-attachment: fixed;
         }
+
         .container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 90%;
+            justify-content: center;
             max-width: 1000px;
-            margin-top: 20px;
-            transform: scale(0.9);
-            background-color: rgba(255, 255, 255, 0.6);
-            border-radius: 8px;
+            margin-top: 30px;
             padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.1);
         }
+
         #user-info, #device-info {
             width: 100%;
             max-width: 800px;
-            padding: 20px;
-            border-radius: 8px;
+            padding: 25px;
+            border-radius: 15px;
             background-color: #fff;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
             text-align: center;
+            transition: all 0.3s ease;
         }
+
+        #user-info:hover, #device-info:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 1.1em;
+            color: #555;
+        }
+
         #map {
             width: 100%;
             height: 400px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
         }
-        h2 {
-            margin-top: 0;
-        }
-        #update-time {
-            font-size: 0.9em;
-            color: gray;
-        }
+
         .btn-container {
-            margin-top: 15px;
+            margin-top: 20px;
         }
+
         .btn {
-            display: inline-block;
-            padding: 10px 15px;
-            margin-right: 10px;
+            padding: 12px 25px;
             color: #fff;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 8px;
             background-color: #007bff;
-            font-size: 0.9em;
+            font-size: 1em;
+            margin-right: 15px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
+
         .btn:hover {
             background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        #update-time {
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 <?php
-include_once __DIR__ . '/../app/views/templates/header.php';
+include_once __DIR__ . '/templates/header.php';
 
 if (!isset($_SESSION['nombre']) || !isset($_SESSION['dni'])) {
     echo '<div class="container text-center" style="margin-top: 100px;">';
@@ -100,7 +126,7 @@ if (!isset($_SESSION['nombre']) || !isset($_SESSION['dni'])) {
             <a href="#" id="share-btn" class="btn">Compartir Ubicación</a>
             <a href="#" id="directions-btn" class="btn">Obtener Indicaciones</a>
         </div>
-    </ div>
+    </div>
 
     <div id="map"></div>
 </div>
