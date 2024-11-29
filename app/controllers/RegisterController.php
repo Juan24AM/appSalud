@@ -1,6 +1,8 @@
 <?php
 namespace App\Controllers;
 
+use App\Models\User;
+
 class RegisterController {
     public function register() {
         if (session_status() == PHP_SESSION_NONE) {
@@ -27,8 +29,9 @@ class RegisterController {
             $confirm_password = $_POST['confirm_password'];
             $telefono = $_POST['telefono'];
 
-            $user = new \App\Models\User();
+            $user = new User();
 
+            // Validaciones
             if (empty($dni) || empty($nombres) || empty($apellidos) || empty($email) || empty($password) || empty($confirm_password)) {
                 $error_message = 'Todos los campos son obligatorios.';
             } elseif ($user->existsByDni($dni)) {
@@ -38,6 +41,7 @@ class RegisterController {
             } elseif ($password !== $confirm_password) {
                 $error_message = 'Las contraseñas no coinciden.';
             } else {
+                // Registro de usuario
                 if (!$user->register($dni, $nombres, $apellidos, $fecha_nacimiento, $sexo, $email, $password, $telefono)) {
                     $error_message = 'Error en el registro. Por favor, inténtelo de nuevo más tarde.';
                 } else {

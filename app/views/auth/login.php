@@ -61,22 +61,22 @@
         }
 
         .form-control:focus {
-            border-color: #007bff;
+            border-color: #4CAF50;
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
         }
 
         .btn-primary {
-            background-color: #007bff;
+            background-color: #4CAF50;
             border: none;
             transition: background-color 0.3s ease;
         }
 
         .btn-primary:hover {
-            background-color: #0056b3;
+            background-color: #4CAF50;
         }
 
         .text-center a {
-            color: #007bff;
+            color: #4CAF50;
             text-decoration: none;
         }
 
@@ -113,7 +113,12 @@
 
         <button class="btn btn-primary w-100">Iniciar sesión</button>
         <div class="text-center mt-3">
-            <a href="#" class=" text-white">¿Olvidaste tu contraseña?</a>
+            <p>
+                <a href="#" class="text-white">¿Olvidaste tu contraseña?</a>
+            </p>
+            <p>
+                <a href="http://localhost/appSalud/register" class="text-white">¿No tienes una cuenta?</a> <!-- Cambia el href aquí -->
+            </p>
         </div>
     </form>
 </div>

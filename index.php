@@ -22,12 +22,17 @@ spl_autoload_register(function ($class) {
 
 use App\Controllers\Error404Controller;
 use App\Controllers\AsignacionAdultosMayoresController;
+use App\Controllers\DashboardController;
+use App\Controllers\LoginController;
+use App\Controllers\ProfileController;
+use App\Controllers\StaffController;
+use App\Controllers\AdultController;
+use App\Controllers\DeviceController;
 use App\Config\Database;
 
 define('BASE_URL', '/appSalud');
 
-$request = $_SERVER['REQUEST_URI'];
-$request = strtok($request, '?');
+$request = strtok($_SERVER['REQUEST_URI'], '?'); // Quitar parámetros de consulta
 
 $database = new Database();
 $dbConnection = $database->getConnection();
@@ -57,18 +62,32 @@ switch ($request) {
         $controller->logout();
         break;
 
-    case BASE_URL . '/asignar_adultos_mayores':
-        $controller = new AsignacionAdultosMayoresController($dbConnection);
+    case BASE_URL . '/dashboard':
+        $controller = new \App\Controllers\AdultController($dbConnection);
+        $seresQueridosDis = $controller->showListDevices();
+        break;
+
+    case BASE_URL . '/staff':
+        $controller = new \App\Controllers\StaffController($dbConnection);
+        $controller->showStaff();
+        break;
+
+    case BASE_URL . '/add-adult':
+        $controller = new AdultController($dbConnection);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller->registrarAdultoMayor();
+            $controller->registerAdultoMayor();
         } else {
-            $controller->mostrarFormularioRegistro();
+            $controller->showRegisterForm(); // Asegúrate de tener este método en el controlador
         }
         break;
 
-    case BASE_URL . '/dashboard':
-        $controller = new \App\Controllers\DashboardController($dbConnection);
-        $controller->showDashboard();
+    case BASE_URL . '/add-device':
+        $controller = new DeviceController($dbConnection);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->enlazarDispositivo();
+        } else {
+            $controller->showRegisterForm(); // Asegúrate de tener este método en el controlador
+        }
         break;
 
     case BASE_URL . '/':
@@ -77,6 +96,6 @@ switch ($request) {
 
     default:
         $errorController = new Error404Controller();
-        $errorController->show404();
+        $errorController->show404(); // Manejo de errores 404
         break;
 }

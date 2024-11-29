@@ -3,14 +3,17 @@
 namespace App\Models;
 
 require_once(__DIR__ . '/../../config/database.php');
+
 use PDO;
+use PDOException;
 
 class User
 {
     private $conn;
     private $table_name = "usuario";
 
-    public function __construct() {
+    public function __construct()
+    {
         $database = new \App\Config\Database();
         $this->conn = $database->getConnection();
     }
@@ -20,7 +23,7 @@ class User
         $query = "INSERT INTO " . $this->table_name . " (dni, nombres, apellidos, fecha_nacimiento, sexo, email, contraseña, telefono) 
                   VALUES (:dni, :nombres, :apellidos, :fecha_nacimiento, :sexo, :email, :password, :telefono)";
         $stmt = $this->conn->prepare($query);
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $hashed_password = hash('sha512', $password);
         $stmt->bindParam(':dni', $dni);
         $stmt->bindParam(':nombres', $nombres);
         $stmt->bindParam(':apellidos', $apellidos);
@@ -34,7 +37,7 @@ class User
             $stmt->execute();
             return true;
         } catch (PDOException $e) {
-            if ($e->getCode() == 23000) {
+            if ($e->getCode() == 23000) { // Código de error para violación de clave única
                 return false;
             }
             error_log("Error en el registro: " . $e->getMessage());
@@ -46,41 +49,25 @@ class User
     {
         $is_email = filter_var($input, FILTER_VALIDATE_EMAIL);
         $query = $is_email
-            ? "SELECT * FROM " . $this->table_name . " WHERE email = :input"
-            : "SELECT * FROM " . $this->table_name . " WHERE dni = :input";
+            ? "SELECT * FROM " . $this->table_name . " WHERE email = :input AND contraseña = :password"
+            : "SELECT * FROM " . $this->table_name . " WHERE dni = :input AND contraseña = :password";
+
+        $stmt = $this->conn->prepare($query);
+        $hashed_password = hash('sha512', $password);
+        $stmt->bindParam(':input', $input);
+        $stmt->bindParam(':password', $hashed_password); // Este parámetro se utiliza en ambas consultas
 
         try {
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':input', $input);
             $stmt->execute();
 
             if ($stmt->rowCount() > 0) {
-                $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                if (password_verify($password, $user['contraseña'])) {
-                    $this->updateLastLogin($user['dni']);
-                    return $user;
-                } else {
-                    return false;
-                }
+                return $stmt->fetch(PDO::FETCH_ASSOC);
             }
-            return false;
         } catch (PDOException $e) {
-            error_log("Error en el inicio de sesión: " . $e->getMessage());
-            return false;
+            error_log("Error en el login: " . $e->getMessage());
         }
-    }
 
-    private function updateLastLogin($dni)
-    {
-        $query = "UPDATE " . $this->table_name . " SET ultimo_inicio_sesion = NOW() WHERE dni = :dni";
-        try {
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':dni', $dni);
-            $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error al actualizar último inicio de sesión: " . $e->getMessage());
-        }
+        return false; // Si no se encuentra el usuario o hay un error, devuelve false
     }
 
     public function getUserByDni($dni)
@@ -93,7 +80,8 @@ class User
         return $stmt->rowCount() > 0 ? $stmt->fetch(PDO::FETCH_ASSOC) : false;
     }
 
-    public function existsByDni($dni)
+    public
+    function existsByDni($dni)
     {
         $query = "SELECT 1 FROM " . $this->table_name . " WHERE dni = :dni LIMIT 1";
         $stmt = $this->conn->prepare($query);
@@ -102,7 +90,8 @@ class User
         return $stmt->rowCount() > 0;
     }
 
-    public function existsByEmail($email)
+    public
+    function existsByEmail($email)
     {
         $query = "SELECT 1 FROM " . $this->table_name . " WHERE email = :email LIMIT 1";
         $stmt = $this->conn->prepare($query);
@@ -111,7 +100,8 @@ class User
         return $stmt->rowCount() > 0;
     }
 
-    public function updateUser($dni, $nombres, $apellidos, $email, $telefono, $departamento, $provincia, $ciudad, $direccion, $sexo, $fecha_nacimiento)
+    public
+    function updateUser($dni, $nombres, $apellidos, $email, $telefono, $departamento, $provincia, $ciudad, $distrito, $direccion, $sexo, $fecha_nacimiento)
     {
         $query = "UPDATE " . $this->table_name . " SET 
                     nombres = :nombres, 
@@ -121,6 +111,7 @@ class User
                     departamento = :departamento, 
                     provincia = :provincia, 
                     ciudad = :ciudad, 
+                    distrito = :distrito,
                     direccion = :direccion, 
                     sexo = :sexo, 
                     fecha_nacimiento = :fecha_nacimiento 
@@ -134,6 +125,7 @@ class User
         $stmt->bindParam(':departamento', $departamento);
         $stmt->bindParam(':provincia', $provincia);
         $stmt->bindParam(':ciudad', $ciudad);
+        $stmt->bindParam(':distrito', $distrito);
         $stmt->bindParam(':direccion', $direccion);
         $stmt->bindParam(':sexo', $sexo);
         $stmt->bindParam(':fecha_nacimiento', $fecha_nacimiento);
