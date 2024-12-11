@@ -1,8 +1,5 @@
 <?php
-
 namespace App\Models;
-
-require_once(__DIR__ . '/../../config/database.php');
 
 use PDO;
 use PDOException;
@@ -12,10 +9,9 @@ class User
     private $conn;
     private $table_name = "usuario";
 
-    public function __construct()
+    public function __construct($db)
     {
-        $database = new \App\Config\Database();
-        $this->conn = $database->getConnection();
+        $this->conn = $db;
     }
 
     public function register($dni, $nombres, $apellidos, $fecha_nacimiento, $sexo, $email, $password, $telefono)
@@ -67,7 +63,23 @@ class User
             error_log("Error en el login: " . $e->getMessage());
         }
 
-        return false; // Si no se encuentra el usuario o hay un error, devuelve false
+        return false;
+    }
+
+    public function updatePassword($id, $hashedPassword) {
+        $query = "UPDATE " . $this->table_name . " SET contraseña = :hashed_password WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':hashed_password', $hashedPassword);
+        $stmt->bindParam(':id', $id);
+        return $stmt->execute();
+    }
+
+    public function findByCode($code) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE verification_code = :code";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':code', $code);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function getUserByDni($dni)
@@ -78,6 +90,24 @@ class User
         $stmt->execute();
 
         return $stmt->rowCount() > 0 ? $stmt->fetch(PDO::FETCH_ASSOC) : false;
+    }
+
+    public function findByEmail($email)
+    {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE email = :email";
+        $stmt = $this->conn->prepare($query);  // Cambiado $this->db por $this->conn
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function saveVerificationCode($id, $code)
+    {
+        $query = "UPDATE " . $this->table_name . " SET verification_code = :code WHERE id = :id";
+        $stmt = $this->conn->prepare($query);  // Cambiado $this->db por $this->conn
+        $stmt->bindParam(':code', $code);
+        $stmt->bindParam(':id', $id);
+        return $stmt->execute();
     }
 
     public
@@ -100,10 +130,10 @@ class User
         return $stmt->rowCount() > 0;
     }
 
-    public
-    function updateUser($dni, $nombres, $apellidos, $email, $telefono, $departamento, $provincia, $ciudad, $distrito, $direccion, $sexo, $fecha_nacimiento)
+    public function updateUser($dni, $nombres, $apellidos, $email, $telefono, $departamento, $provincia, $ciudad, $distrito, $direccion, $sexo, $fecha_nacimiento)
     {
-        $query = "UPDATE " . $this->table_name . " SET 
+        try {
+            $query = "UPDATE " . $this->table_name . " SET 
                     nombres = :nombres, 
                     apellidos = :apellidos, 
                     email = :email, 
@@ -117,20 +147,33 @@ class User
                     fecha_nacimiento = :fecha_nacimiento 
                   WHERE dni = :dni";
 
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':nombres', $nombres);
-        $stmt->bindParam(':apellidos', $apellidos);
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':telefono', $telefono);
-        $stmt->bindParam(':departamento', $departamento);
-        $stmt->bindParam(':provincia', $provincia);
-        $stmt->bindParam(':ciudad', $ciudad);
-        $stmt->bindParam(':distrito', $distrito);
-        $stmt->bindParam(':direccion', $direccion);
-        $stmt->bindParam(':sexo', $sexo);
-        $stmt->bindParam(':fecha_nacimiento', $fecha_nacimiento);
-        $stmt->bindParam(':dni', $dni);
+            $stmt = $this->conn->prepare($query);
 
-        return $stmt->execute();
+            // Log de la consulta SQL y parámetros
+            error_log("Ejecutando consulta SQL de actualización");
+            error_log("DNI para actualización: $dni");
+
+            $stmt->bindParam(':nombres', $nombres);
+            $stmt->bindParam(':apellidos', $apellidos);
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':telefono', $telefono);
+            $stmt->bindParam(':departamento', $departamento);
+            $stmt->bindParam(':provincia', $provincia);
+            $stmt->bindParam(':ciudad', $ciudad);
+            $stmt->bindParam(':distrito', $distrito);
+            $stmt->bindParam(':direccion', $direccion);
+            $stmt->bindParam(':sexo', $sexo);
+            $stmt->bindParam(':fecha_nacimiento', $fecha_nacimiento);
+            $stmt->bindParam(':dni', $dni);
+
+            $result = $stmt->execute();
+            error_log("Resultado de la ejecución SQL: " . ($result ? "exitoso" : "fallido"));
+            error_log("Filas afectadas: " . $stmt->rowCount());
+
+            return $result;
+        } catch (PDOException $e) {
+            error_log("Error en actualización de usuario: " . $e->getMessage());
+            return false;
+        }
     }
 }

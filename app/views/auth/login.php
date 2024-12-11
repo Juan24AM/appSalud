@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar sesión - AppSalud</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/appSalud/public/css/styles.css"> <!-- Ajusta esta ruta si es necesario -->
+    <link rel="stylesheet" href="/css/styles.css">
     <style>
         body {
-            background-image: url('/appSalud/public/images/Fondo_Sutil_Paisaje.jpg'); /* Cambia a tu imagen de fondo */
+            background-image: url('/images/Fondo_Sutil_Paisaje.jpg');
             background-size: cover;
             background-position: center;
             height: 100vh;
@@ -56,7 +56,7 @@
         }
 
         .form-control {
-            padding-left: 40px; /* Espacio para el icono */
+            padding-left: 40px;
             transition: border-color 0.3s ease;
         }
 
@@ -88,21 +88,25 @@
 <body>
 <div class="form-container">
     <div class="text-center mb-4">
-        <img src="/appSalud/public/images/Logo_Empresa.png" alt="Logo de la Aplicación" class="img-fluid rounded-circle"
+        <img src="/images/Logo_Empresa.png" alt="Logo de la Aplicación"
+             class="img-fluid rounded-circle"
              style="max-width: 150px; height: 150px; object-fit: cover;">
     </div>
     <h2 class="text-center mb-4">Iniciar sesión</h2>
-    <form action="/appSalud/login" method="POST">
+    <form action="<?php echo BASE_URL; ?>/login" method="POST">
         <div class="mb-3 input-group">
-            <span class="input-icon"><img src="/appSalud/public/images/Icono_Usuario.png" alt="Icono de usuario"
-                                          style="width: 20px;"></span>
+            <span class="input-icon">
+                <img src="/images/Icono_Usuario.png" alt="Icono de usuario" style="width: 20px;">
+            </span>
             <input type="text" id="input" name="input" placeholder="Correo o DNI"
                    class="form-control <?php echo !empty($error_message) ? 'error-input' : ''; ?>"
-                   value="<?php echo htmlspecialchars($input); ?>" required>
+                   value="<?php echo htmlspecialchars($input ?? ''); ?>" required>
         </div>
         <div class="mb-3 input-group">
-            <span class="input-icon"><img src="/appSalud/public/images/Icono_Candado.png" alt="Icono de candado"
-                                          style="width: 20px;"></span>
+            <span class="input-icon">
+                <img src="/images/Icono_Candado.png" alt="Icono de candado"
+                     style="width: 20px;">
+            </span>
             <input type="password" id="password" name="password" placeholder="Contraseña"
                    class="form-control <?php echo !empty($error_message) ? 'error-input' : ''; ?>" required>
         </div>
@@ -114,16 +118,15 @@
         <button class="btn btn-primary w-100">Iniciar sesión</button>
         <div class="text-center mt-3">
             <p>
-                <a href="#" class="text-white">¿Olvidaste tu contraseña?</a>
+                <a href="<?php echo BASE_URL; ?>/forgot-password" class="text-white">¿Olvidaste tu contraseña?</a>
             </p>
             <p>
-                <a href="http://localhost/appSalud/register" class="text-white">¿No tienes una cuenta?</a> <!-- Cambia el href aquí -->
+                <a href="<?php echo BASE_URL; ?>/register" class="text-white">¿No tienes una cuenta?</a>
             </p>
         </div>
     </form>
 </div>
 
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

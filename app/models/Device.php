@@ -1,35 +1,47 @@
 <?php
-
 namespace App\Models;
 
-require_once(__DIR__ . '/../../config/database.php');
 use PDO;
 use PDOException;
 
 class Device {
     private $conn;
+    private $table_name = "dispositivo";
 
-    public function __construct() {
-        $database = new \App\Config\Database();
-        $this->conn = $database->getConnection();
+    public function __construct($db) {
+        $this->conn = $db;
     }
 
-    public function enlazarDispositivo($dispositivo_id, $alias, $adulto_id, $responsable_id) {
+    public function enlazarDispositivo($dispositivo_id, $alias, $adulto_mayor_id, $responsable_id) {
         try {
-            $query = "CALL EnlazarDispositivo(:dispositivo_id, :alias, :adulto_id, :responsable_id)";
+            // Verificar si el dispositivo ya existe
+            $check_query = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE dispositivo_id = :dispositivo_id";
+            $check_stmt = $this->conn->prepare($check_query);
+            $check_stmt->bindParam(':dispositivo_id', $dispositivo_id);
+            $check_stmt->execute();
+
+            if ($check_stmt->fetchColumn() > 0) {
+                error_log("El dispositivo ya está registrado: " . $dispositivo_id);
+                throw new \Exception('El dispositivo ya está registrado');
+            }
+
+            // Insertar nuevo dispositivo
+            $query = "INSERT INTO " . $this->table_name . " 
+                     (dispositivo_id, alias, adulto_mayor_id, responsable_id) 
+                     VALUES (:dispositivo_id, :alias, :adulto_mayor_id, :responsable_id)";
+
             $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':dispositivo_id', $dispositivo_id, PDO::PARAM_STR);
-            $stmt->bindParam(':alias', $alias, PDO::PARAM_STR);
-            $stmt->bindParam(':adulto_id', $adulto_id, PDO::PARAM_INT);
+            $stmt->bindParam(':dispositivo_id', $dispositivo_id);
+            $stmt->bindParam(':alias', $alias);
+            $stmt->bindParam(':adulto_mayor_id', $adulto_mayor_id, PDO::PARAM_INT);
             $stmt->bindParam(':responsable_id', $responsable_id, PDO::PARAM_INT);
 
-            if ($stmt->execute()) {
-                return "Dispositivo registrado correctamente";
-            }
-            return "Error al registrar dispositivo";
+            error_log("Ejecutando query de inserción para dispositivo: " . $dispositivo_id);
+            return $stmt->execute();
+
         } catch (PDOException $e) {
-            error_log("Error al enlazar dispositivo: " . $e->getMessage());
-            return "Error: " . $e->getMessage();
+            error_log("Error en enlazarDispositivo: " . $e->getMessage());
+            return false;
         }
     }
 }

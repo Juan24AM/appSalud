@@ -150,7 +150,7 @@
 <section class="team-container">
     <!-- Miembro 1: Fundador -->
     <div class="team-member">
-        <img src="<?= BASE_URL ?>/public/images/fundador.png" alt="FUNDADOR" class="team-photo">
+        <img src="/images/fundador.png" alt="FUNDADOR" class="team-photo">
         <div class="content">
             <h3>Shande Fernandez</h3>
             <p class="role">Fundador</p>
@@ -160,7 +160,7 @@
 
     <!-- Miembro 2: Desarrollador -->
     <div class="team-member">
-        <img src="<?= BASE_URL ?>/public/images/desarrollador.png" alt="Developer" class="team-photo">
+        <img src="/images/desarrollador.png" alt="Developer" class="team-photo">
         <div class="content">
             <h3>Juan Portocarrero</h3>
             <p class="role">Desarrollador</p>
@@ -170,7 +170,7 @@
 
     <!-- Miembro 3: Manager -->
     <div class="team-member">
-        <img src="<?= BASE_URL ?>/public/images/mujer.png" alt="Manager" class="team-photo">
+        <img src="/images/mujer.png" alt="Manager" class="team-photo">
         <div class="content">
             <h3>Alexandra Leon</h3>
             <p class="role">Manager</p>
@@ -180,7 +180,17 @@
 
     <!-- Miembro 4: Manager -->
     <div class="team-member">
-        <img src="<?= BASE_URL ?>/public/images/hombre.png" alt="Manager" class="team-photo">
+        <img src="/images/mujer.png" alt="Manager" class="team-photo">
+        <div class="content">
+            <h3>Katty Hilasaca</h3>
+            <p class="role">Manager</p>
+            <p>Alexandra es el responsable de gestionar los proyectos y coordinar a todos los miembros del equipo para cumplir los plazos.</p>
+        </div>
+    </div>
+
+    <!-- Miembro 5: Manager -->
+    <div class="team-member">
+        <img src="/images/hombre.png" alt="Manager" class="team-photo">
         <div class="content">
             <h3>Gabriel Calderon</h3>
             <p class="role">Manager</p>
@@ -188,12 +198,12 @@
         </div>
     </div>
 
-    <!-- Miembro 5: Diseñadora -->
+    <!-- Miembro 6: Diseñadora -->
     <div class="team-member">
-        <img src="<?= BASE_URL ?>/public/images/disenador.png" alt="Designer" class="team-photo">
+        <img src="/images/disenador.png" alt="Designer" class="team-photo">
         <div class="content">
             <h3>Nahin Alexander</h3>
-            <p class="role">Diseñadora</p>
+            <p class="role">Diseñador</p>
             <p>Nahin es nuestro diseñador gráfico, encargado de crear la interfaz de usuario y la experiencia visual de nuestros productos.</p>
         </div>
     </div>

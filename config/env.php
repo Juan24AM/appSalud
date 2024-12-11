@@ -1,6 +1,7 @@
 <?php
 function loadEnv($filePath) {
     if (!file_exists($filePath)) {
+        error_log("Archivo .env no encontrado en: " . $filePath);
         return;
     }
 
@@ -19,7 +20,9 @@ function loadEnv($filePath) {
         $key = trim($key);
         $value = trim($value);
 
+        putenv(sprintf('%s=%s', $key, $value));
         $_ENV[$key] = $value;
+        $_SERVER[$key] = $value;
     }
 }
 

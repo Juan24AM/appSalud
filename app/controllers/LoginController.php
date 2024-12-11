@@ -4,12 +4,16 @@ namespace App\Controllers;
 use App\Models\User;
 
 class LoginController {
-    public function login() {
+    private $db;
+
+    public function __construct($db) {
+        $this->db = $db;
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
+    }
 
-        // Redirigir si ya está autenticado
+    public function login() {
         if (isset($_SESSION['nombre'])) {
             header("Location: " . BASE_URL . "/dashboard");
             exit();
@@ -18,21 +22,17 @@ class LoginController {
         $error_message = "";
         $input = "";
 
-        // Procesar el formulario de inicio de sesión
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $user = new User();
+            $user = new User($this->db);  // Pasamos la conexión aquí
             $input = $_POST['input'] ?? '';
             $password = $_POST['password'] ?? '';
 
-            // Validar campos vacíos
             if (empty($input) || empty($password)) {
                 $error_message = "Por favor, completa todos los campos.";
             } else {
-                // Intentar iniciar sesión
                 $result = $user->login($input, $password);
 
                 if ($result) {
-                    // Guardar información del usuario en la sesión
                     $_SESSION['user_id'] = $result['id'];
                     $_SESSION['nombre'] = $result['nombres'];
                     $_SESSION['dni'] = $result['dni'];
@@ -45,20 +45,60 @@ class LoginController {
             }
         }
 
-        // Incluir la vista de inicio de sesión
         include __DIR__ . '/../views/auth/login.php';
     }
 
     public function logout() {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        // Limpiar y destruir la sesión
         session_unset();
         session_destroy();
 
         header("Location: " . BASE_URL . "/login");
         exit();
+    }
+
+    public function recoverPassword() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $email = $_POST['email'];
+
+            $userModel = new User($this->db);  // Pasamos la conexión aquí
+            $user = $userModel->findByEmail($email);
+
+            if ($user) {
+                $code = bin2hex(random_bytes(16));
+                $userModel->saveVerificationCode($user['id'], $code);
+
+                $serviceMail = new \App\Services\ServiceMail();
+                $subject = "Recuperación de Contraseña";
+                $message = "Tu código de verificación es: $code";
+
+                $result = $serviceMail->sendMail($email, $subject, $message);
+
+                if ($result->isSuccess) {
+                    echo "Se ha enviado un código de verificación a tu correo electrónico.";
+                } else {
+                    echo "Error al enviar el correo: " . $result->getMessage;
+                }
+            } else {
+                echo "El correo electrónico no está registrado.";
+            }
+        }
+    }
+
+    public function resetPassword() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $code = $_POST['code'];
+            $newPassword = $_POST['new_password'];
+            $hashedPassword = hash('sha512', $newPassword);
+
+            $userModel = new User($this->db);  // Pasamos la conexión aquí
+            $user = $userModel->findByCode($code);
+
+            if ($user) {
+                $userModel->updatePassword($user['id'], $hashedPassword);
+                echo "Tu contraseña ha sido restablecida con éxito.";
+            } else {
+                echo "Código de verificación inválido.";
+            }
+        }
     }
 }

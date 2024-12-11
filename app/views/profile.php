@@ -1,3 +1,17 @@
+
+<?php
+// Helper function para manejar valores nulos
+function safe($array, $key) {
+    return isset($array[$key]) && $array[$key] !== null ? htmlspecialchars($array[$key]) : '';
+}
+
+// Helper function para manejar el select de sexo
+function selected($userData, $value) {
+    return isset($userData['sexo']) && $userData['sexo'] === $value ? 'selected' : '';
+}
+
+
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,9 +22,18 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,400i,700,900&display=swap" rel="stylesheet">
     <style>
         body {
-            background: rgb(99, 39, 120);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('/images/Fondo_Dashboard.png');
+            background-size: cover;
+
             color: white;
             text-align: center;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
         }
         .container {
             background-color: rgba(0, 0, 0, 0.7);
@@ -86,8 +109,8 @@
         }
     </style>
 </head>
-<body>
 <?php include_once __DIR__ . '/../views/templates/header.php'; ?>
+<body>
 
 <!-- Bloque de mensaje de éxito -->
 <?php if (isset($successMessage)): ?>
@@ -120,8 +143,8 @@
         <div class="col-md-3 border-right">
             <div class="d-flex flex-column align-items-center text-center p-3 py-5">
                 <img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
-                <span class="font-weight-bold"><?php echo htmlspecialchars($userData['nombres'] . ' ' . $userData['apellidos']); ?></span>
-                <span class="text-black-50"><?php echo htmlspecialchars($userData['email']); ?></span>
+                <span class="font-weight-bold"><?php echo safe($userData, 'nombres') . ' ' . safe($userData, 'apellidos'); ?></span>
+                <span class="text-black-50"><?php echo safe($userData, 'email'); ?></span>
             </div>
         </div>
 
@@ -131,37 +154,69 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="text-right">Configuración de Perfil</h4>
                 </div>
-                <form id="profileForm" method="POST" action="/profile">
+                <form id="profileForm" method="POST" action="<?php echo BASE_URL; ?>/profile">
                     <div class="row mt-2">
-                        <div class="col-md-6"><label class="labels">DNI</label><input type="text" class="form-control" id="dni" name="dni" value="<?php echo htmlspecialchars($userData['dni']); ?>" readonly></div>
-                        <div class="col-md-6"><label class="labels">Teléfono</label><input type="text" class="form-control" id="telefono" name="telefono" value="<?php echo htmlspecialchars($userData['telefono']); ?>" readonly></div>
+                        <div class="col-md-6">
+                            <label class="labels">DNI</label>
+                            <input type="text" class="form-control" id="dni" name="dni" value="<?php echo safe($userData, 'dni'); ?>" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="labels">Teléfono</label>
+                            <input type="text" class="form-control" id="telefono" name="telefono" value="<?php echo safe($userData, 'telefono'); ?>" readonly>
+                        </div>
                     </div>
                     <div class="row mt-2">
-                        <div class="col-md-6"><label class="labels">Nombre</label><input type="text" class="form-control" id="nombres" name="nombres" value="<?php echo htmlspecialchars($userData['nombres']); ?>" readonly></div>
-                        <div class="col-md-6"><label class="labels">Apellidos</label><input type="text" class="form-control" id="apellidos" name="apellidos" value="<?php echo htmlspecialchars($userData['apellidos']); ?>" readonly></div>
+                        <div class="col-md-6">
+                            <label class="labels">Nombre</label>
+                            <input type="text" class="form-control" id="nombres" name="nombres" value="<?php echo safe($userData, 'nombres'); ?>" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="labels">Apellidos</label>
+                            <input type="text" class="form-control" id="apellidos" name="apellidos" value="<?php echo safe($userData, 'apellidos'); ?>" readonly>
+                        </div>
                     </div>
                     <div class="row mt-3">
-                        <div class="col-md-12"><label class="labels">Email</label><input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($userData['email']); ?>" readonly></div>
+                        <div class="col-md-12">
+                            <label class="labels">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="<?php echo safe($userData, 'email'); ?>" readonly>
+                        </div>
                     </div>
                     <div class="row mt-3">
-                        <div class="col-md-6"><label class="labels">Departamento</label><input type="text" class="form-control" id="departamento" name="departamento" value="<?php echo htmlspecialchars($userData['departamento']); ?>" readonly></div>
-                        <div class="col-md-6"><label class="labels">Provincia</label><input type="text" class="form-control" id="provincia" name="provincia" value="<?php echo htmlspecialchars($userData['provincia']); ?>" readonly></div>
-                        <div class="col-md-6"><label class="labels">Ciudad</label><input type="text" class="form-control" id="ciudad" name="ciudad" value="<?php echo htmlspecialchars($userData['ciudad']); ?>" readonly></div>
-                        <div class="col-md-6"><label class="labels">Distrito</label><input type="text" class="form-control" id="distrito" name="distrito" value="<?php echo htmlspecialchars($userData['distrito']); ?>" readonly></div>
+                        <div class="col-md-6">
+                            <label class="labels">Departamento</label>
+                            <input type="text" class="form-control" id="departamento" name="departamento" value="<?php echo safe($userData, 'departamento'); ?>" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="labels">Provincia</label>
+                            <input type="text" class="form-control" id="provincia" name="provincia" value="<?php echo safe($userData, 'provincia'); ?>" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="labels">Ciudad</label>
+                            <input type="text" class="form-control" id="ciudad" name="ciudad" value="<?php echo safe($userData, 'ciudad'); ?>" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="labels">Distrito</label>
+                            <input type="text" class="form-control" id="distrito" name="distrito" value="<?php echo safe($userData, 'distrito'); ?>" readonly>
+                        </div>
                     </div>
                     <div class="row mt-3">
-                        <div class="col-md-12"><label class="labels">Dirección</label><input type="text" class="form-control" id="direccion" name="direccion" value="<?php echo htmlspecialchars($userData['direccion']); ?>" readonly></div>
+                        <div class="col-md-12">
+                            <label class="labels">Dirección</label>
+                            <input type="text" class="form-control" id="direccion" name="direccion" value="<?php echo safe($userData, 'direccion'); ?>" readonly>
+                        </div>
                     </div>
                     <div class="row mt-3">
-                        <div class="col-md-6"><label class="labels">Sexo</label>
+                        <div class="col-md-6">
+                            <label class="labels">Sexo</label>
                             <select class="form-select" id="sexo" name="sexo" disabled>
-                                <option value="M" <?php echo $userData['sexo'] === 'M' ? 'selected' : ''; ?>>Masculino</option>
-                                <option value="F" <?php echo $userData['sexo'] === 'F' ? 'selected' : ''; ?>>Femenino</option>
-                                <option value="O" <?php echo $userData['sexo'] === 'O' ? 'selected' : ''; ?>>Otro</option>
+                                <option value="M" <?php echo selected($userData, 'M'); ?>>Masculino</option>
+                                <option value="F" <?php echo selected($userData, 'F'); ?>>Femenino</option>
+                                <option value="O" <?php echo selected($userData, 'O'); ?>>Otro</option>
                             </select>
                         </div>
                         <div class="col-md-6"><label class="labels">Fecha de Nacimiento</label>
-                            <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="<?php echo htmlspecialchars($userData['fecha_nacimiento']); ?>" readonly>
+                            <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento"
+                                   value="<?php echo safe($userData, 'fecha_nacimiento'); ?>" readonly>
                         </div>
                     </div>
                     <div id="editButtons" class="d-flex mt-4">
@@ -191,21 +246,35 @@
                     </thead>
                     <tbody>
                     <?php
-                        $i = 1;
-                        if (is_array($seresQueridos) || is_object($seresQueridos)) {
-                            foreach ($seresQueridos as $ser) {
-                                echo "<tr>";
-                                echo "<td>{$i}</td>";
-                                echo "<td>{$ser['dni']}</td>";
-                                echo "<td>{$ser['nombres']}</td>";
-                                echo "<td><button type='button' class='btn btn-success linkDeviceBtn' data-bs-toggle='modal' data-bs-target='#linkDeviceModal' data-adulto-id='{$ser['id']}'>Enlazar Dispositivo</button></td>";
-                                echo "</tr>";
-                                $i++;
+                    $i = 1;
+                    if (is_array($seresQueridos) || is_object($seresQueridos)) {
+                        foreach ($seresQueridos as $ser) {
+                            echo "<tr>";
+                            echo "<td>{$i}</td>";
+                            echo "<td>{$ser['dni']}</td>";
+                            echo "<td>{$ser['nombres']}</td>";
+                            echo "<td>";
+                            // Verificar si ya tiene un dispositivo enlazado
+                            if (!empty($ser['dispositivo_id'])) {
+                                echo "<button type='button' class='btn btn-secondary' disabled title='Ya tiene un dispositivo enlazado'>
+                        Dispositivo Enlazado
+                      </button>";
+                            } else {
+                                echo "<button type='button' class='btn btn-success linkDeviceBtn' 
+                        data-bs-toggle='modal' 
+                        data-bs-target='#linkDeviceModal' 
+                        data-adulto-id='{$ser['id']}'>
+                        Enlazar Dispositivo
+                      </button>";
                             }
-                        } else {
-                            echo "<tr><td colspan='4'>No hay seres queridos registrados.</td></tr>";
+                            echo "</td>";
+                            echo "</tr>";
+                            $i++;
                         }
-                        ?>
+                    } else {
+                        echo "<tr><td colspan='4'>No hay seres queridos registrados.</td></tr>";
+                    }
+                    ?>
                     </tbody>
                 </table>
 
@@ -225,15 +294,18 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="linkDeviceForm" method="POST" action="/appSalud/add-device">
-                    <input type="hidden" id="adulto_id" name="adulto_id" value="">
+                <form id="linkDeviceForm" method="POST" action="<?php echo BASE_URL; ?>/add-device">
+                    <input type="hidden" id="adulto_id" name="adulto_id">
                     <div class="mb-3">
                         <label for="dispositivo_id" class="form-label">ID del Dispositivo</label>
-                        <input type="text" class="form-control form-control-lg" id="dispositivo_id" name="dispositivo_id" required>
+                        <input type="text" class="form-control form-control-lg" id="dispositivo_id"
+                               name="dispositivo_id" pattern="SUSAL-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}"
+                               placeholder="Ejemplo: SUSAL-X4K9Y-HM2PQ-8TGBV-NPRC7" required>
                     </div>
                     <div class="mb-3">
                         <label for="alias" class="form-label">Alias</label>
-                        <input type="text" class="form-control form-control-lg" id="alias" name="alias" required>
+                        <input type="text" class="form-control form-control-lg" id="alias"
+                               name="alias" placeholder="Ejemplo: Dispositivo Principal" required>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -245,7 +317,48 @@
     </div>
 </div>
 
-<!-- Modal de Ag regar Adulto Mayor -->
+<script>
+    // Script simplificado para manejar el modal de enlazar dispositivo
+    document.addEventListener('DOMContentLoaded', function() {
+        // Actualizar el ID del adulto mayor cuando se abre el modal
+        const linkBtns = document.querySelectorAll('.linkDeviceBtn');
+        linkBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.getElementById('adulto_id').value = this.dataset.adultoId;
+            });
+        });
+
+        // Manejar el envío del formulario
+        document.getElementById('linkDeviceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: 'Dispositivo enlazado correctamente'
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Error al enlazar el dispositivo'
+                        });
+                    }
+                });
+        });
+    });
+</script>
+
+<!-- Modal de Agregar Adulto Mayor -->
 <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content" style="background-color: rgba(255, 255, 255, 0.8); border-radius: 10px;">
@@ -254,55 +367,73 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="addAdultForm" method="POST" action="/appSalud/add-adult">
+                <form id="addAdultForm" method="POST" action="<?php echo BASE_URL; ?>/add-adult">
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="dni" class="form-label">DNI</label>
-                            <input type="text" class="form-control" id="dni" name="dni" placeholder="Ingrese DNI" required pattern="^\d{8}$" style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
+                            <input type="text" class="form-control" id="dni" name="dni"
+                                   placeholder="Ingrese DNI" required pattern="^\d{8}$"
+                                   style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
                         </div>
                         <div class="col-md-6">
                             <label for="nombres" class="form-label">Nombres</label>
-                            <input type="text" class="form-control" id="nombres" name="nombres" placeholder="Ingrese nombres" required style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
+                            <input type="text" class="form-control" id="nombres" name="nombres"
+                                   placeholder="Ingrese nombres" required
+                                   style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="apellidos" class="form-label">Apellidos</label>
-                            <input type="text" class="form-control" id="apellidos" name="apellidos" placeholder="Ingrese apellidos" required style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
+                            <input type="text" class="form-control" id="apellidos" name="apellidos"
+                                   placeholder="Ingrese apellidos" required
+                                   style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
                         </div>
                         <div class="col-md-6">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Ingrese email" value="<?php echo htmlspecialchars($userData['email']); ?>" required style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
+                            <input type="email" class="form-control" id="email" name="email"
+                                   placeholder="Ingrese email" value="<?php echo safe($userData, 'email'); ?>" required
+                                   style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="telefono" class="form-label">Teléfono</label>
-                            <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Ingrese teléfono" value="<?php echo htmlspecialchars($userData['telefono']); ?>" required style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
+                            <input type="text" class="form-control" id="telefono" name="telefono"
+                                   placeholder="Ingrese teléfono" value="<?php echo safe($userData, 'telefono'); ?>" required
+                                   style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
                         </div>
                         <div class="col-md-6">
                             <label for="departamento" class="form-label">Departamento</label>
-                            <input type="text" class="form-control" id="departamento" name="departamento" placeholder="Ingrese departamento" value="<?php echo htmlspecialchars($userData['departamento']); ?>" required style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
+                            <input type="text" class="form-control" id="departamento" name="departamento"
+                                   placeholder="Ingrese departamento" value="<?php echo safe($userData, 'departamento'); ?>" required
+                                   style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="provincia" class="form-label">Provincia</label>
-                            <input type="text" class="form-control" id="provincia" name="provincia" placeholder="Ingrese provincia" value="<?php echo htmlspecialchars($userData['provincia']); ?>" required style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
+                            <input type="text" class="form-control" id="provincia" name="provincia"
+                                   placeholder="Ingrese provincia" value="<?php echo safe($userData, 'provincia'); ?>" required
+                                   style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
                         </div>
-                        ```html
                         <div class="col-md-6">
                             <label for="ciudad" class="form-label">Ciudad</label>
-                            <input type="text" class="form-control" id="ciudad" name="ciudad" placeholder="Ingrese ciudad" value="<?php echo htmlspecialchars($userData['ciudad']); ?>" required style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
+                            <input type="text" class="form-control" id="ciudad" name="ciudad"
+                                   placeholder="Ingrese ciudad" value="<?php echo safe($userData, 'ciudad'); ?>" required
+                                   style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="direccion" class="form-label">Dirección</label>
-                        <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Ingrese dirección" value="<?php echo htmlspecialchars($userData['direccion']); ?>" required style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
+                        <input type="text" class="form-control" id="direccion" name="direccion"
+                               placeholder="Ingrese dirección" value="<?php echo safe($userData, 'direccion'); ?>" required
+                               style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
                     </div>
                     <div class="mb-3">
                         <label for="sexo" class="form-label">Sexo</label>
-                        <select class="form-select" id="sexo" name="sexo" required style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
+                        <select class="form-select" id="sexo" name="sexo" required
+                                style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
                             <option value="" selected disabled>Seleccione</option>
                             <option value="M">Masculino</option>
                             <option value="F">Femenino</option>
@@ -312,20 +443,27 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="estatura" class="form-label">Estatura</label>
-                            <input type="text" class="form-control" id="estatura" name="estatura" placeholder="Ingrese estatura (cm)" required style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
+                            <input type="text" class="form-control" id="estatura" name="estatura"
+                                   placeholder="Ingrese estatura (cm)" required
+                                   style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
                         </div>
                         <div class="col-md-6">
-                            <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
-                            <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
+                            <label for="fecha_nacimiento" class="form-label">Fecha sde Nacimiento</label>
+                            <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required
+                                   style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="tipo_de_sangre" class="form-label">Tipo de Sangre</label>
-                        <input type="text" class="form-control" id="tipo_de_sangre" name="tipo_de_sangre" placeholder="Ingrese tipo de sangre" required style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
+                        <input type="text" class="form-control" id="tipo_de_sangre" name="tipo_de_sangre"
+                               placeholder="Ingrese tipo de sangre" required
+                               style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);">
                     </div>
                     <div class="mb-3">
                         <label for="padecimientos" class="form-label">Padecimientos</label>
-                        <textarea class="form-control" id="padecimientos" name="padecimientos" placeholder="Ingrese padecimientos" rows="3" required style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);"></textarea>
+                        <textarea class="form-control" id="padecimientos" name="padecimientos"
+                                  placeholder="Ingrese padecimientos" rows="3" required
+                                  style="background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.2);"></textarea>
                     </div>
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary">Registrar</button>
@@ -345,89 +483,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    // Script para asignar el adulto_id dinámicamente
-    document.addEventListener('DOMContentLoaded', () => {
-        const adultoMayorSelect = document.getElementById('adulto_mayor');
-        const deviceInfo = document.getElementById('device-info');
-        const mapElement = document.getElementById('map');
-        const fetchIntervalMs = 10000;
-        let currentInterval;
-
-        const map = L.map(mapElement).setView([0, 0], 15);
-        const marker = L.marker([0, 0]).addTo(map);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: '© OpenStreetMap contributors',
-        }).addTo(map);
-
-        // Ocultar mapa y sección inicialmente
-        const toggleVisibility = (element, show) => {
-            element.style.display = show ? 'block' : 'none';
-        };
-
-        toggleVisibility(mapElement, false);
-        toggleVisibility(deviceInfo, false);
-
-        // Función principal para actualizar datos
-        const fetchDeviceData = async (dispositivoId) => {
-            try {
-                const response = await fetch(`http://161.132.50.15:5000/api/susalud/geoData?id=${dispositivoId}`);
-                if (!response.ok) throw new Error('Error al obtener datos del dispositivo.');
-
-                const data = await response.json();
-                const { nombre, descripcion, satelites, hdop, latitud, longitud } = data;
-
-                // Actualiza DOM
-                document.getElementById('device-name').textContent = nombre || 'Desconocido';
-                document.getElementById('device-description').textContent = descripcion || 'No disponible';
-                document.getElementById('satelites').textContent = satelites ?? 'No disponible';
-                document.getElementById('hdop').textContent = hdop ?? 'No disponible';
-                document.getElementById('update-time').textContent = new Date().toLocaleString();
-
-                // Actualiza marcador y vista
-                marker.setLatLng([latitud, longitud]);
-                map.setView([latitud, longitud]);
-
-                // Actualiza enlaces
-                document.getElementById('share-btn').href = `https://wa.me/?text=Ubicación actual: https://www.google.com/maps?q=${latitud},${longitud}`;
-                document.getElementById('directions-btn').href = `https://www.google.com/maps/dir/?api=1&destination=${latitud},${longitud}`;
-            } catch (error) {
-                console.error(error.message);
-            }
-        };
-
-        // Evento de selección
-        adultoMayorSelect.addEventListener('change', () => {
-            const selectedOption = adultoMayorSelect.options[adultoMayorSelect.selectedIndex];
-            const dispositivoId = selectedOption.dataset.dispositivo;
-            const nombrePersona = selectedOption.dataset.nombre;
-
-            if (!adultoMayorSelect.value) {
-                toggleVisibility(mapElement, false);
-                toggleVisibility(deviceInfo, false);
-                clearInterval(currentInterval);
-                return;
-            }
-
-            if (!dispositivoId) {
-                alert(`La persona seleccionada (${nombrePersona}) no tiene un dispositivo asociado.`);
-                toggleVisibility(mapElement, false);
-                toggleVisibility(deviceInfo, false);
-                clearInterval(currentInterval);
-                return;
-            }
-
-            toggleVisibility(mapElement, true);
-            toggleVisibility(deviceInfo, true);
-
-            clearInterval(currentInterval);
-            currentInterval = setInterval(() => fetchDeviceData(dispositivoId), fetchIntervalMs);
-            fetchDeviceData(dispositivoId);
-        });
-    });
-
-
     const editButton = document.getElementById('editButton');
     const cancelButton = document.getElementById('cancelButton');
     const saveButton = document.getElementById('saveButton');
@@ -481,14 +536,37 @@
 
     profileForm.addEventListener('submit', function(event) {
         event.preventDefault();
-        Swal.fire({
-            icon: 'success',
-            title: '¡Registrado!',
-            text: 'El adulto mayor se ha registrado exitosamente.',
-            confirmButtonText: 'Aceptar'
-        }).then(() => {
-            window.location.reload();
+
+        // Remover readonly y disabled antes de enviar
+        Array.from(profileForm.elements).forEach(element => {
+            element.removeAttribute('readonly');
+            element.removeAttribute('disabled');
         });
+
+        // Enviar el formulario
+        fetch(this.action, {
+            method: 'POST',
+            body: new FormData(this)
+        })
+            .then(response => response.text())
+            .then(data => {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Actualizado!',
+                    text: 'Los datos se han actualizado exitosamente.',
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    window.location.reload();
+                });
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Hubo un error al actualizar los datos.',
+                    confirmButtonText: 'Aceptar'
+                });
+            });
     });
 </script>
 </body>

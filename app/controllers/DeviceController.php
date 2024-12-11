@@ -1,60 +1,80 @@
 <?php
-    namespace App\Controllers;
+namespace App\Controllers;
 
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+use App\Models\Device;
 
-    require_once __DIR__ . '/../models/Device.php';
+class DeviceController {
+    private $deviceModel;
+    private $db;
 
-    use App\Models\Device;
-
-    class DeviceController
-    {
-        private $deviceModel;
-
-        public function __construct()
-        {
-            $this->deviceModel = new Device();
+    public function __construct($db) {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
 
-        public function enlazarDispositivo() {
-            if (!isset($_SESSION['dni'])) {
-                echo json_encode([
-                    'status' => 'error',
-                    'message' => 'No has iniciado sesión.'
-                ]);
-                exit;
-            }
+        $this->db = $db;
+        $this->deviceModel = new Device($db);  // Pasar la conexión al modelo
 
-            if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                $dispositivo_id = $_POST['dispositivo_id'] ?? null;
-                $alias = $_POST['alias'] ?? null;
-                $adulto_mayor_id = $_POST['adulto_id'] ?? null;
-                $responsable_id = $_SESSION['user_id'] ?? null;
-
-                // Depuración: Verifica los datos recibidos
-                error_log("Datos recibidos: " . print_r($_POST, true));
-
-                if ($dispositivo_id && $alias && $adulto_mayor_id) {
-                    $result = $this->deviceModel->enlazarDispositivo($dispositivo_id, $alias, $adulto_mayor_id, $responsable_id);
-                    if ($result) {
-                        echo json_encode([
-                            'status' => 'success',
-                            'message' => 'Dispositivo enlazado correctamente.'
-                        ]);
-                    } else {
-                        echo json_encode([
-                            'status' => 'error',
-                            'message' => 'Error al enlazar dispositivo.'
-                        ]);
-                    }
-                } else {
-                    echo json_encode([
-                        'status' => 'error',
-                        'message' => 'Faltan datos.'
-                    ]);
-                }
-            }
+        // Verificar sesión
+        if (!isset($_SESSION['dni'])) {
+            header("Location: " . BASE_URL . "/login");
+            exit;
         }
     }
+
+    public function showRegisterForm() {
+        require __DIR__ . '/../views/device/register.php';
+    }
+
+    public function enlazarDispositivo() {
+        header('Content-Type: application/json');
+
+        try {
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+                throw new \Exception('Método no permitido');
+            }
+
+            // Validar y obtener datos
+            $dispositivo_id = trim($_POST['dispositivo_id'] ?? '');
+            $alias = trim($_POST['alias'] ?? '');
+            $adulto_mayor_id = intval($_POST['adulto_id'] ?? 0);
+            $responsable_id = intval($_SESSION['user_id'] ?? 0);
+
+            // Debug
+            error_log("Datos recibidos en enlazarDispositivo:");
+            error_log("dispositivo_id: " . $dispositivo_id);
+            error_log("alias: " . $alias);
+            error_log("adulto_mayor_id: " . $adulto_mayor_id);
+            error_log("responsable_id: " . $responsable_id);
+
+            // Validar datos
+            if (empty($dispositivo_id) || empty($alias) || $adulto_mayor_id <= 0) {
+                throw new \Exception('Faltan datos o datos inválidos');
+            }
+
+            // Intentar enlazar el dispositivo
+            $result = $this->deviceModel->enlazarDispositivo(
+                $dispositivo_id,
+                $alias,
+                $adulto_mayor_id,
+                $responsable_id
+            );
+
+            if (!$result) {
+                throw new \Exception('Error al enlazar el dispositivo');
+            }
+
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Dispositivo enlazado correctamente'
+            ]);
+
+        } catch (\Exception $e) {
+            error_log("Error en enlazarDispositivo: " . $e->getMessage());
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+}
